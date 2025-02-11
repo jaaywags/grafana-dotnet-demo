@@ -87,6 +87,7 @@ If you want to put this somewhere like on a VPS or Droplet, you definitely can! 
 - This is an unsecured logging server. So anyone with the loki or prometheus endpoints can flood your servers. Very unlikely but you never know.
 - The way I am sending logs to Loki is through an http endpoint. So all you need to do is set up a domain with ProxyPass to `http://127.0.0.1:3100`. I also turn off all CORS policies.
 - The way metrics and traces are sent are through gRPC, not HTTP. So you don't need a virtual host. Instead, you should just open up a port for `4317`.
+- If you do stand this stuff up in a VPS somewhere, remember to update the endpoints in your API project. Loki can point to a domain but Prometheus needs to point to an IP address with the port.
 
 ## Other Dashboards
 
