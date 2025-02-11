@@ -1,2 +1,8 @@
+# Builds
 bin/
 obj/
+
+# Generated files from grafana, loki, and prometheus. You may want to add these to source control so your logs and metrics are saved.
+grafana/loki/
+grafana/prometheus/
+grafana/grafana/
