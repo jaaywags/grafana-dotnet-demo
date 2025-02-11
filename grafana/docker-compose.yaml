@@ -1,0 +1,78 @@
+networks:
+  grafana-network:
+
+volumes:
+  loki:
+  grafana:
+  esdata:
+  grafana-config:
+
+services:
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki.yaml -querier.engine.timeout=10m -querier.parallelise-shardable-queries=false -querier.query-timeout=10m -server.http-read-timeout=10m -server.http-write-timeout=10m
+    volumes:
+      - ./loki:/loki
+      - ./configs/loki.yaml:/etc/loki/loki.yaml
+    networks:
+      - grafana-network
+
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_SERVER_ROOT_URL=https://logs-v2.twistedqueue.com
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana-config:/etc/grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - grafana-network
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./configs/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    restart: on-failure
+    ports:
+      - 1888:1888
+      - 8888:8888
+      - 8889:8889
+      - 13133:13133
+      - 4317:4317
+      - 4318:4318
+      - 55679:55679
+    networks:
+      - grafana-network
+    depends_on:
+      - jaeger
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/jaeger:2.2.0
+    environment:
+      - LOG_LEVEL=debug
+    ports:
+      - "16686:16686"
+    networks:
+      - grafana-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.config.file=/etc/prometheus/web.yml'
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./configs/prometheus-web.yml:/etc/prometheus/web.yml
+      - ./prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - grafana-network
