@@ -87,3 +87,7 @@ If you want to put this somewhere like on a VPS or Droplet, you definitely can! 
 - This is an unsecured logging server. So anyone with the loki or prometheus endpoints can flood your servers. Very unlikely but you never know.
 - The way I am sending logs to Loki is through an http endpoint. So all you need to do is set up a domain with ProxyPass to `http://127.0.0.1:3100`. I also turn off all CORS policies.
 - The way metrics and traces are sent are through gRPC, not HTTP. So you don't need a virtual host. Instead, you should just open up a port for `4317`.
+
+## Other Dashboards
+
+Grafana provides so many dashboards. You can [find more here](https://grafana.com/grafana/dashboards/). The one I used in this demo project is a modified version of [this dashboard](https://grafana.com/grafana/dashboards/19924-asp-net-core/).
