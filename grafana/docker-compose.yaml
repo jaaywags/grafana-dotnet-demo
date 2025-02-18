@@ -67,7 +67,6 @@ services:
     image: prom/prometheus:latest
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--web.config.file=/etc/prometheus/web.yml'
     volumes:
       - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./configs/prometheus-web.yml:/etc/prometheus/web.yml
